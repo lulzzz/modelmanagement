@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.*;
@@ -34,6 +35,8 @@ public class SwaggerConfig {
     public Docket apiDocumentation() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
+                .tags(new Tag("Models", "Access to machine learning models"))
+                .useDefaultResponseMessages(false)
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(DocumentedEndpoint.class))
                 .paths(regex("/.*")).build();
