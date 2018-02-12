@@ -1,5 +1,6 @@
 package com.infosupport.machinelearning.modelmanagement.controllers;
 
+import com.infosupport.machinelearning.modelmanagement.DocumentedEndpoint;
 import com.infosupport.machinelearning.modelmanagement.models.Model;
 import com.infosupport.machinelearning.modelmanagement.storage.repository.ModelRepository;
 import org.apache.commons.io.FileUtils;
@@ -14,6 +15,7 @@ import java.io.InputStream;
 import java.util.Date;
 
 @RestController
+@DocumentedEndpoint
 public class ModelsController {
 
     @Autowired
