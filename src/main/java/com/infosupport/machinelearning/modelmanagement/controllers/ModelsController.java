@@ -1,10 +1,14 @@
 package com.infosupport.machinelearning.modelmanagement.controllers;
 
+import com.infosupport.machinelearning.modelmanagement.DocumentedEndpoint;
+import com.infosupport.machinelearning.modelmanagement.models.GenericError;
 import com.infosupport.machinelearning.modelmanagement.models.Model;
-import com.infosupport.machinelearning.modelmanagement.storage.repository.ModelRepository;
+import com.infosupport.machinelearning.modelmanagement.repositories.ModelRepository;
+import io.swagger.annotations.*;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +18,8 @@ import java.io.InputStream;
 import java.util.Date;
 
 @RestController
+@DocumentedEndpoint
+@Api(tags={ "Models" })
 public class ModelsController {
 
     @Autowired
@@ -22,8 +28,19 @@ public class ModelsController {
     @Value("${modelmanagement.model.root.directory}")
     String modelRootDirectoryPath;
 
-    @RequestMapping(value = "models/{name}", method = {RequestMethod.POST, RequestMethod.PUT})
-    public ResponseEntity<?> uploadModel(@PathVariable String name, InputStream entity) {
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    @RequestMapping(
+            value = "models/{name}",
+            method = {RequestMethod.POST},
+            consumes = "application/octet-stream",
+            produces = "application/json")
+    @ApiOperation(value = "uploadModel")
+    @ApiResponses({
+            @ApiResponse(code = 202, message = "The model is succesfully uploaded"),
+            @ApiResponse(code = 400, message = "Invalid request data provided", response = GenericError.class),
+            @ApiResponse(code = 500, message = "Internal Server Error", response = GenericError.class)
+    })
+    public ResponseEntity<?> uploadModel(@PathVariable String name, @ApiParam(value = "file", required = true) InputStream entity) {
         // TODO: Test if name is valid "The name should be a slug that contains only alphanumeric characters and dashes."
         try {
             // Kijken wat de hoogste versie is
@@ -63,10 +80,10 @@ public class ModelsController {
 
         } catch (IOException e) {
             //TODO: Log to logging facility
-            return ResponseEntity.status(500).build();
+            return ResponseEntity.status(500).body(new GenericError("Failed to process the request."));
         }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.accepted().build();
     }
 }
 
