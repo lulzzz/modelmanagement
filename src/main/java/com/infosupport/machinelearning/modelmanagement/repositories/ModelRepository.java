@@ -1,4 +1,4 @@
-package com.infosupport.machinelearning.modelmanagement.storage.repository;
+package com.infosupport.machinelearning.modelmanagement.repositories;
 
 import com.infosupport.machinelearning.modelmanagement.models.Model;
 import org.springframework.data.repository.CrudRepository;

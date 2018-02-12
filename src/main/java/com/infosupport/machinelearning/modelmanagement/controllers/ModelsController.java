@@ -2,7 +2,7 @@ package com.infosupport.machinelearning.modelmanagement.controllers;
 
 import com.infosupport.machinelearning.modelmanagement.DocumentedEndpoint;
 import com.infosupport.machinelearning.modelmanagement.models.Model;
-import com.infosupport.machinelearning.modelmanagement.storage.repository.ModelRepository;
+import com.infosupport.machinelearning.modelmanagement.repositories.ModelRepository;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
