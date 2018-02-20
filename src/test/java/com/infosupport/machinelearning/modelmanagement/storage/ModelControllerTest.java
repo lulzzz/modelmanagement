@@ -26,8 +26,4 @@ public class ModelControllerTest {
 
     }
 
-//    @Test
-//    public void testModelGet() {
-//
-//    }
 }
