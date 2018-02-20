@@ -9,7 +9,6 @@ import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,12 +77,9 @@ public class ModelsController {
     @RequestMapping(
             value = "models/{name}/{version}",
             consumes = "*/*",
-            produces = {
-                    MediaType.APPLICATION_OCTET_STREAM_VALUE
-            },
             method = RequestMethod.GET
     )
-    @ApiOperation(value = "downloadModel")
+    @ApiOperation(value = "downloadModel", produces = "application/octet-stream")
     @ApiResponses({
             @ApiResponse(code = 200, message = "The model data"),
             @ApiResponse(code = 404, message = "The model could not be found", response = GenericError.class),

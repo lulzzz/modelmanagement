@@ -1,6 +1,7 @@
 package com.infosupport.machinelearning.modelmanagement.api;
 
 import com.infosupport.machinelearning.modelmanagement.storage.ModelStorageService;
+import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,14 +56,26 @@ public class ModelsControllerIT {
         InputStream modelStream = new ByteArrayInputStream("hello-world".getBytes());
         modelStorageService.saveModel("test-model", modelStream);
 
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<String> request = new HttpEntity<>(headers);
+        HttpEntity<String> request = buildModelDownloadRequestEntity();
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/models/test-model/1", HttpMethod.GET, request, byte[].class);
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    }
+
+    @Test
+    public void shouldReturn404ForNonExistingModels() {
+        HttpEntity<String> request = buildModelDownloadRequestEntity();
+        ResponseEntity<byte[]> response = restTemplate.exchange("/models/test-model/2", HttpMethod.GET, request, byte[].class);
+
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
+    }
+
+    @NotNull
+    private HttpEntity<String> buildModelDownloadRequestEntity() {
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM));
+
+        return new HttpEntity<>(headers);
     }
 }
