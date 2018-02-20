@@ -4,14 +4,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -64,5 +61,16 @@ public class ModelStorageServiceTests {
     public void findModelByNameAndVersionForNonExistingModelThrowsException() throws Exception {
         expectedException.expect(ModelNotFoundException.class);
         modelStorageService.findModelByNameAndVersion("test-model", 2);
+    }
+
+    @Test
+    public void deleteModelForExistingModelRemovesModel() throws Exception {
+        Mockito.when(modelMetadataRepository.findByNameAndVersion("test-model", 3))
+                .thenReturn(new ModelMetadata("test-model", 3, new Date()));
+
+        modelStorageService.deleteModel("test-model", 3);
+
+        Mockito.verify(modelDataRepository).delete("test-model", 3);
+        Mockito.verify(modelMetadataRepository).delete(Mockito.any(ModelMetadata.class));
     }
 }

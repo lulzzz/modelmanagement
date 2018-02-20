@@ -1,5 +1,6 @@
 package com.infosupport.machinelearning.modelmanagement.storage;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -54,13 +55,29 @@ public class ModelDataRepositoryImpl implements ModelDataRepository {
         File modelDirectory = Paths.get(rootPath, name, String.valueOf(version)).toFile();
         File modelFile = Paths.get(rootPath, name, String.valueOf(version), "model.zip").toFile();
 
-        if(!modelDirectory.exists()) {
+        if (!modelDirectory.exists()) {
             modelDirectory.mkdirs();
         }
 
         try (FileOutputStream outputStream = new FileOutputStream(modelFile)) {
             IOUtils.copy(modelStream, outputStream);
             outputStream.flush();
+        }
+    }
+
+    /**
+     * Deletes an existing model
+     *
+     * @param name    Name of the model
+     * @param version Version of the model
+     * @throws IOException Gets thrown when the model folder cannot be deleted
+     */
+    @Override
+    public void delete(String name, int version) throws IOException {
+        File modelDirectory = Paths.get(rootPath, name, String.valueOf(version)).toFile();
+
+        if (modelDirectory.exists()) {
+            FileUtils.deleteDirectory(modelDirectory);
         }
     }
 

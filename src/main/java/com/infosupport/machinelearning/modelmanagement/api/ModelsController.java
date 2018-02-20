@@ -57,7 +57,7 @@ public class ModelsController {
             @ApiResponse(code = 500, message = "Internal Server Error", response = GenericError.class)
     })
     public ResponseEntity<Object> uploadModel(@PathVariable String name,
-                                         @ApiParam(value = "file", required = true) InputStream entity) {
+                                              @ApiParam(value = "file", required = true) InputStream entity) {
         try {
             modelStorageService.saveModel(name, entity);
         } catch (IOException ex) {
@@ -91,6 +91,29 @@ public class ModelsController {
             return ResponseEntity.ok(new InputStreamResource(responseData.getStream()));
         } catch (ModelNotFoundException ex) {
             return genericApiError(404, messages.get("errors.model_not_found"));
+        }
+    }
+
+    @RequestMapping(
+            value = "models/{name}/{version}",
+            consumes = "*/*",
+            method = RequestMethod.DELETE
+    )
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "deleteModel")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "The model is deleted"),
+            @ApiResponse(code = 404, message = "The model could not be found", response = GenericError.class),
+            @ApiResponse(code = 500, message = "Internal server error", response = GenericError.class)
+    })
+    public ResponseEntity<Object> deleteModel(@PathVariable("name") String name, @PathVariable("version") int version) {
+        try {
+            modelStorageService.deleteModel(name, version);
+            return ResponseEntity.noContent().build();
+        } catch (ModelNotFoundException ex) {
+            return genericApiError(404, messages.get("errors.model_not_found"));
+        } catch (IOException ex) {
+            return genericApiError(500, messages.get("errors.internal_error"));
         }
     }
 

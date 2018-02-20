@@ -1,7 +1,6 @@
 package com.infosupport.machinelearning.modelmanagement.storage;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +9,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -49,5 +47,17 @@ public class ModelDataRepositoryTests {
             assertThat(modelStream, not(nullValue()));
             modelStream.close();
         }
+    }
+
+    @Test
+    public void deleteRemovesFolderFromDisk() throws Exception {
+        File modelDirectory = Paths.get(modelStoragePath, "test-model", "3").toFile();
+        modelDirectory.mkdirs();
+
+        Files.write(Paths.get(modelStoragePath,"test-model", "3", "model.zip"), "hello-world".getBytes());
+
+        modelDataRepository.delete("test-model", 3);
+
+        assertThat(modelDirectory.exists(), equalTo(false));
     }
 }

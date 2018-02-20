@@ -25,4 +25,13 @@ public interface ModelDataRepository {
      * @param modelStream Stream to store on disk
      */
     void save(String name, int version, InputStream modelStream) throws IOException;
+
+    /**
+     * Deletes an existing model
+     *
+     * @param name    Name of the model
+     * @param version Version of the model
+     * @throws IOException Gets thrown when the model folder can't be deleted
+     */
+    void delete(String name, int version) throws IOException;
 }

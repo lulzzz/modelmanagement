@@ -37,6 +37,26 @@ public class ModelStorageServiceImpl implements ModelStorageService {
     }
 
     /**
+     * Deletes a model
+     *
+     * @param name    Name of the model
+     * @param version Version of the model
+     * @throws ModelNotFoundException Gets thrown when the model could not be found
+     * @throws IOException            Gets thrown when the model files can't be deleted
+     */
+    @Override
+    public void deleteModel(String name, int version) throws ModelNotFoundException, IOException {
+        ModelMetadata metadata = modelMetadataRepository.findByNameAndVersion(name, version);
+
+        if (metadata == null) {
+            throw new ModelNotFoundException(name, version);
+        }
+
+        modelMetadataRepository.delete(metadata);
+        modelDataRepository.delete(name, version);
+    }
+
+    /**
      * Finds a model by its name and version
      *
      * @param name    Name of the model

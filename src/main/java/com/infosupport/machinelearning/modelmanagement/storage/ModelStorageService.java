@@ -17,6 +17,15 @@ public interface ModelStorageService {
     ModelMetadata saveModel(String name, InputStream modelStream) throws IOException;
 
     /**
+     * Deletes a model
+     *
+     * @param name    Name of the model
+     * @param version Version of the model
+     * @throws ModelNotFoundException Gets thrown when the model could not be found
+     */
+    void deleteModel(String name, int version) throws ModelNotFoundException, IOException;
+
+    /**
      * Finds a model by its name and version
      *
      * @param name    Name of the model

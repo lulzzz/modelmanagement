@@ -1,5 +1,6 @@
 package com.infosupport.machinelearning.modelmanagement.api;
 
+import com.infosupport.machinelearning.modelmanagement.storage.ModelMetadata;
 import com.infosupport.machinelearning.modelmanagement.storage.ModelStorageService;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
@@ -23,7 +24,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ModelsControllerIT {
     @Autowired
     private TestRestTemplate restTemplate;
@@ -63,9 +64,34 @@ public class ModelsControllerIT {
     }
 
     @Test
-    public void shouldReturn404ForNonExistingModels() {
+    public void downloadModelShouldReturn404ForNonExistingModels() {
         HttpEntity<String> request = buildModelDownloadRequestEntity();
-        ResponseEntity<byte[]> response = restTemplate.exchange("/models/test-model/2", HttpMethod.GET, request, byte[].class);
+        ResponseEntity<byte[]> response = restTemplate.exchange(
+                "/models/test-model/2", HttpMethod.GET, request, byte[].class);
+
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
+    }
+
+    @Test
+    public void deleteModelShouldReturn204ForExistingModels() throws Exception {
+        ModelMetadata metadata = modelStorageService.saveModel("test-model",
+                new ByteArrayInputStream("hello-world".getBytes()));
+
+        HttpEntity<String> request = buildModelDownloadRequestEntity();
+
+        ResponseEntity<byte[]> response = restTemplate.exchange(
+                String.format("/models/%s/%s", metadata.getName(), metadata.getVersion()),
+                HttpMethod.DELETE, request, byte[].class);
+
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+    }
+
+    @Test
+    public void deleteModelShouldReturn404ForNonExistingModels() throws Exception {
+        HttpEntity<String> request = buildModelDownloadRequestEntity();
+
+        ResponseEntity<byte[]> response = restTemplate.exchange(
+                "/models/test-model/3", HttpMethod.DELETE, request, byte[].class);
 
         assertThat(response.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
     }
