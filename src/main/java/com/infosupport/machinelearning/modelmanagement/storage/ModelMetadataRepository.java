@@ -1,11 +1,6 @@
 package com.infosupport.machinelearning.modelmanagement.storage;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-
-import javax.persistence.NamedQuery;
-import java.util.List;
 
 /**
  * Provides access to model metadata in the database
