@@ -20,7 +20,7 @@ public class ModelDataRepositoryImpl implements ModelDataRepository {
      *
      * @param rootPath Root path for the repository
      */
-    public ModelDataRepositoryImpl(@Value("modelmanagement.storage.rootpath") String rootPath) {
+    public ModelDataRepositoryImpl(@Value("${modelmanagement.storage.rootpath}") String rootPath) {
         this.rootPath = rootPath;
     }
 

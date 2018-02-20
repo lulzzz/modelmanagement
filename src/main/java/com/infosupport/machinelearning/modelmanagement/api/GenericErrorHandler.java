@@ -8,14 +8,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.io.IOException;
+
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class ModelNotFoundErrorHandler {
+public class GenericErrorHandler {
     @ExceptionHandler(ModelNotFoundException.class)
-    public ResponseEntity<GenericError> handleError(ModelNotFoundException exception) {
+    public ResponseEntity<GenericError> handleIOException(IOException exception) {
         return ResponseEntity
-                .status(404)
+                .status(500)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new GenericError("The model doesn't exist"));
+                .body(new GenericError("The server was unable to handle your request."));
     }
 }

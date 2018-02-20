@@ -1,15 +1,9 @@
 package com.infosupport.machinelearning.modelmanagement.api;
 
 import com.infosupport.machinelearning.modelmanagement.DocumentedEndpoint;
-import com.infosupport.machinelearning.modelmanagement.models.GenericError;
-import com.infosupport.machinelearning.modelmanagement.models.Model;
-import com.infosupport.machinelearning.modelmanagement.repositories.ModelRepository;
 import com.infosupport.machinelearning.modelmanagement.storage.ModelData;
 import com.infosupport.machinelearning.modelmanagement.storage.ModelStorageService;
-import com.infosupport.machinelearning.modelmanagement.storage.ModelStorageServiceImpl;
 import io.swagger.annotations.*;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -18,22 +12,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 @RestController
 @DocumentedEndpoint
 @Api(tags = {"Models"})
 public class ModelsController {
-    private ModelRepository modelRepository;
-    private ModelStorageService modelStorageService;
+    private final ModelStorageService modelStorageService;
 
     @Autowired
-    public ModelsController(ModelRepository modelRepository, ModelStorageService modelStorageService) {
-        this.modelRepository = modelRepository;
+    public ModelsController(ModelStorageService modelStorageService) {
         this.modelStorageService = modelStorageService;
     }
 
@@ -52,27 +41,11 @@ public class ModelsController {
             @ApiResponse(code = 400, message = "Invalid request data provided", response = GenericError.class),
             @ApiResponse(code = 500, message = "Internal Server Error", response = GenericError.class)
     })
-    public ResponseEntity<?> uploadModel(@PathVariable String name, @ApiParam(value = "file", required = true) InputStream entity) {
-        // TODO: Test if name is valid "The name should be a slug that contains only alphanumeric characters and dashes."
-        try {
-            //Determine filename, filepath and version number.
-            ModelStorageServiceImpl modelStorageServiceImpl = new ModelStorageServiceImpl(null, null);
-            int newVersionNumber = modelStorageServiceImpl.getCurrentModelVersion(modelRepository, name);
-            String modelDirPath = modelStorageServiceImpl.createDirectories(modelRootDirectoryPath, name);
-            String fileName = String.format("%s_%d.zip", name, newVersionNumber);
-            String filePath = modelDirPath + File.separator + fileName;
-
-            // Write file to file directory.
-            FileUtils.copyInputStreamToFile(entity, new File(filePath));
-            // Add reference to model to database
-            Model newModel = new Model(name, filePath, newVersionNumber, new Date());
-            modelRepository.save(newModel);
-
-        } catch (IOException e) {
-            //TODO: Log to logging facility
-            return ResponseEntity.status(500).body(new GenericError("Failed to process the request."));
-        }
-
+    public ResponseEntity<?> uploadModel(
+            @PathVariable String name,
+            @ApiParam(value = "file", required = true) InputStream entity)
+            throws IOException {
+        modelStorageService.saveModel(name, entity);
         return ResponseEntity.accepted().build();
     }
 
