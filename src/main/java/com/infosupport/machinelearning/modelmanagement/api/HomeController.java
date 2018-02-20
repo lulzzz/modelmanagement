@@ -1,4 +1,4 @@
-package com.infosupport.machinelearning.modelmanagement.controllers;
+package com.infosupport.machinelearning.modelmanagement.api;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

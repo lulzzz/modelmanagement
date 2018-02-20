@@ -1,4 +1,4 @@
-package com.infosupport.machinelearning.modelmanagement.models;
+package com.infosupport.machinelearning.modelmanagement.api;
 
 /**
  * Defines a generic error message
