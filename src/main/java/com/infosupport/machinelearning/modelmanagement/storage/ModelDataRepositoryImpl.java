@@ -58,8 +58,10 @@ public class ModelDataRepositoryImpl implements ModelDataRepository {
             modelDirectory.mkdirs();
         }
 
-        FileOutputStream outputStream = new FileOutputStream(modelFile);
-        IOUtils.copy(modelStream, outputStream);
+        try (FileOutputStream outputStream = new FileOutputStream(modelFile)) {
+            IOUtils.copy(modelStream, outputStream);
+            outputStream.flush();
+        }
     }
 
     /**
