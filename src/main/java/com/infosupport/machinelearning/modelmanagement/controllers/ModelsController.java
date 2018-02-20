@@ -4,6 +4,7 @@ import com.infosupport.machinelearning.modelmanagement.DocumentedEndpoint;
 import com.infosupport.machinelearning.modelmanagement.models.GenericError;
 import com.infosupport.machinelearning.modelmanagement.models.Model;
 import com.infosupport.machinelearning.modelmanagement.repositories.ModelRepository;
+import com.infosupport.machinelearning.modelmanagement.services.ModelFileService;
 import io.swagger.annotations.*;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,47 +37,25 @@ public class ModelsController {
             produces = "application/json")
     @ApiOperation(value = "uploadModel")
     @ApiResponses({
-            @ApiResponse(code = 202, message = "The model is succesfully uploaded"),
-            @ApiResponse(code = 400, message = "Invalid request data provided", response = GenericError.class),
-            @ApiResponse(code = 500, message = "Internal Server Error", response = GenericError.class)
+        @ApiResponse(code = 202, message = "The model is succesfully uploaded"),
+        @ApiResponse(code = 400, message = "Invalid request data provided", response = GenericError.class),
+        @ApiResponse(code = 500, message = "Internal Server Error", response = GenericError.class)
     })
     public ResponseEntity<?> uploadModel(@PathVariable String name, @ApiParam(value = "file", required = true) InputStream entity) {
         // TODO: Test if name is valid "The name should be a slug that contains only alphanumeric characters and dashes."
         try {
-            // Kijken wat de hoogste versie is
-            Model currentModel = modelRepository.findTopByNameOrderByVersionDesc(name);
-
-            int newVersionNumber = 1;
-            if (currentModel != null) {
-                newVersionNumber = currentModel.getVersion() + 1;
-            }
-
-            // Indien nodig de map voor alle modellen aanmaken
-            File modelRootDirectory = new File(modelRootDirectoryPath);
-            if (!modelRootDirectory.exists()) {
-                modelRootDirectory.mkdirs();
-            }
-
-            String modelDirPath = modelRootDirectoryPath + File.separator + name;
-
-            // Indien nodig de map voor de modelnaam aanmaken
-            File modelDirectory = new File(modelDirPath);
-            if (!modelDirectory.exists()) {
-                modelDirectory.mkdir();
-            }
-
-            // Bestandnaam bepalen voor de nieuwe versie
+            //Determine filename, filepath and version number.
+            ModelFileService modelFileService = new ModelFileService();
+            int newVersionNumber = modelFileService.getCurrentModelVersion(modelRepository, name);
+            String modelDirPath = modelFileService.createDirectories(modelRootDirectoryPath, name);
             String fileName = String.format("%s_%d.zip", name, newVersionNumber);
             String filePath = modelDirPath + File.separator + fileName;
 
-            // Bestand wegschrijven
+            // Write file to file directory.
             FileUtils.copyInputStreamToFile(entity, new File(filePath));
-
-            // Database vullen met nieuw model-object
+            // Add reference to model to database
             Model newModel = new Model(name, filePath, newVersionNumber, new Date());
             modelRepository.save(newModel);
-
-            // TODO: Naam, Datum gepubliceerd (en door wie) + koppeling naar bestand opslaan in de database
 
         } catch (IOException e) {
             //TODO: Log to logging facility

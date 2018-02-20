@@ -22,51 +22,15 @@ public class ModelRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    @Mock
+    @Autowired
     private ModelRepository modelRepository;
 
     @Test
-    public void testExample() {
+    public void ModelRepositoryPersistenceTest() {
         this.entityManager.persist(new Model("NN", "models" + File.separator + "NN" + File.separator + "NN_1.zip", 1, new Date()));
         Model model = this.modelRepository.findModelByName("NN");
         assertThat(model.getName()).isEqualTo("NN");
+        assertThat(model.getVersion()).isEqualTo(1);
     }
-
-
-    @Test
-    public void loadNonExistent() {
-        //assertThat(service.load("foo.txt")).doesNotExist()
-    }
-
-    @Test
-    public void saveAndLoad() {
-
-    }
-    /*
-            service.store(new MockMultipartFile("foo", "foo.txt", MediaType.TEXT_PLAIN_VALUE,
-                "Hello World".getBytes()));
-        assertThat(service.load("foo.txt")).exists();
-
-     */
-
-    @Test//(expected = RuntimeException.class)
-    public void saveNotPermitted() {
-
-    }
-    /*
-            service.store(new MockMultipartFile("foo", "../foo.txt",
-                MediaType.TEXT_PLAIN_VALUE, "Hello World".getBytes()));
-
-     */
-
-    @Test
-    public void savePermitted() {
-
-    }
-    /*
-            service.store(new MockMultipartFile("foo", "bar/../foo.txt",
-                MediaType.TEXT_PLAIN_VALUE, "Hello World".getBytes()));
-
-     */
 
 }
