@@ -7,7 +7,6 @@ import com.infosupport.machinelearning.modelmanagement.storage.ModelNotFoundExce
 import com.infosupport.machinelearning.modelmanagement.storage.ModelStorageService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -58,7 +57,7 @@ public class ModelsController {
             @ApiResponse(code = 400, message = "Invalid request data provided", response = GenericError.class),
             @ApiResponse(code = 500, message = "Internal Server Error", response = GenericError.class)
     })
-    public ResponseEntity<?> uploadModel(@PathVariable String name,
+    public ResponseEntity<Object> uploadModel(@PathVariable String name,
                                          @ApiParam(value = "file", required = true) InputStream entity) {
         try {
             modelStorageService.saveModel(name, entity);
@@ -90,7 +89,7 @@ public class ModelsController {
             @ApiResponse(code = 404, message = "The model could not be found", response = GenericError.class),
             @ApiResponse(code = 500, message = "Internal server error", response = GenericError.class)
     })
-    public ResponseEntity<?> downloadModel(@PathVariable("name") String name, @PathVariable("version") int version) {
+    public ResponseEntity<Object> downloadModel(@PathVariable("name") String name, @PathVariable("version") int version) {
         try {
             ModelData responseData = modelStorageService.findModelByNameAndVersion(name, version);
             return ResponseEntity.ok(new InputStreamResource(responseData.getStream()));
@@ -106,7 +105,7 @@ public class ModelsController {
      * @param errorMessage Error message to display
      * @return Returns the response entity for the error
      */
-    private ResponseEntity<?> genericApiError(int statusCode, String errorMessage) {
+    private ResponseEntity<Object> genericApiError(int statusCode, String errorMessage) {
         return ResponseEntity
                 .status(statusCode)
                 .body(new GenericError(errorMessage));
