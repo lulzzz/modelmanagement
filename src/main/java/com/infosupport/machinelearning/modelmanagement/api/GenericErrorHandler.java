@@ -13,7 +13,7 @@ import java.io.IOException;
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GenericErrorHandler {
-    @ExceptionHandler(ModelNotFoundException.class)
+    @ExceptionHandler(IOException.class)
     public ResponseEntity<GenericError> handleIOException(IOException exception) {
         return ResponseEntity
                 .status(500)
