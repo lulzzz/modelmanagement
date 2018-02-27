@@ -68,7 +68,7 @@ public class ModelsController {
                 return genericApiError(500, messages.get("errors.internal_error"));
             }
         } else {
-            return genericApiError(500, messages.get("errors.invalid_name"));
+            return genericApiError(400, messages.get("errors.invalid_name"));
         }
 
 
